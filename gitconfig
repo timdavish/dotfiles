@@ -1,0 +1,62 @@
+[alias]
+  open-config = "!atom ~/.gitconfig"
+
+  # Branch
+  branches = branch -a
+  branch-clean = "!f() { git checkout ${1-master} && git branch --merged ${1-master} | grep -v " ${1-master}$" | xargs git branch -d; }; f"
+
+  # Checkout
+  co = checkout
+  cob = checkout -b
+
+  # Commit
+  amend = commit -a --amend
+  cm = !git add -A && git commit -m
+  save = !git add -A && git commit -m 'SAVEPOINT'
+
+  # Log
+  hist = log --graph --pretty=format:'%Cred%h%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]' --abbrev-commit --date=relative
+
+  # Pull
+  pullr = pull --rebase --prune
+  smu = submodule update --init --recursive
+  up = "!f() { git pullr && git smu; }; f"
+
+  # Pull request
+  pr = "!f() { git fetch -fu ${2:-origin} refs/pull/$1/head:pr/$1 && git checkout pr/$1; }; f"
+  pr-clean = "!f() { git checkout ${1-master} && git for-each-ref refs/heads/pr/* --format=\"%(refname)\" | while read ref ; do branch=${ref#refs/heads/} ; git branch -D $branch ; done; }; f"
+
+  # Reset: adds an unreachable commit (can be restored with git reflog)
+  wipe = !git add -A && git commit -qm 'WIPE SAVEPOINT' && git reset HEAD~1 --hard
+
+  # Misc.
+  tags = tag -l
+  remotes = remote -v
+
+[color]
+  # Use colors in Git commands that are capable of colored output when outputting to the terminal
+  ui = auto
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+[color "status"]
+  added = yellow
+  changed = green
+  untracked = cyan
+
+# Use `origin` as the default remote on the `master` branch in all cases
+[branch "master"]
+  remote = origin
+  merge = refs/heads/master
+
+[user]
+	name = <name>
+	email = <email>
+[credential]
+	helper = osxkeychain
